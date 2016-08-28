@@ -30,12 +30,14 @@ def build_teams(player_roster, team_names):
                            key = lambda exp: exp['Soccer Experience'],
                            reverse = True)
 
-    league = [] # list of player lists (team_names number of teams in league)
+    league = [] # league = a list of teams. teams = list of player dictionaries
     for count in team_names: # initialise list with correct number of teams
         league.append([])
 
+    # assign an index for league to team name
     team_names = enumerate(team_names, start = 0)
     team_names = list(team_names)
+    # reverse the team name order players can be sorted forward then backwards
     rev_team_names = team_names[::-1]
 
     while player_roster:
@@ -61,7 +63,7 @@ def build_teams(player_roster, team_names):
                 league[count].append(player)  # add to team list in league
 
     # write a new csv file with the players assigned to teams for future reference
-    with open('Team-Roster.csv', 'w', newline="\n") as csvfile:
+    with open('team_roster.csv', 'w', newline="\n") as csvfile:
         fieldnames = league[0][0].keys() #get the fieldnames from first player
         writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
         writer.writeheader()
@@ -96,6 +98,7 @@ def personal_letter(player_list):
     'Dragons', 'Sharks' and 'Raptors' function requires a list of player dicts
     with the keys: Name, Guardian Name(s), Soccer Experience, Team Name.
     """
+    project_requirements = True # set to false for better file names
     the_incident = soccer_mum_fight()
     dragons = {'Name': 'Dragons','Team Noise': 'WOOSH', 'First Practice': 'March 17th @ 1pm'}
     sharks = {'Name': 'Sharks','Team Noise': 'CHOMP', 'First Practice': 'March 17th @ 3pm'}
@@ -105,8 +108,15 @@ def personal_letter(player_list):
 
     while player_list: # continue while there are still players in the list
         player = player_list.pop() # remove a player from the list
-        letter_name =(date + '-' + player['Team Name'] + '-' +
-                      player['Name'].replace(' ', '-') +'.txt')
+
+        if project_requirements:
+            # file name lower case underscore separated
+            letter_name = player['Name'].replace(' ', '_') +'.txt'
+            letter_name = letter_name.lower()
+        else:
+            # create a date specific file name YYYY-MM-DD-Team-Player
+            letter_name =(date + '-' + player['Team Name'] + '-' +
+                          player['Name'].replace(' ', '-') +'.txt')
 
         if player['Team Name'] == 'Dragons':
             team = dragons
@@ -146,7 +156,7 @@ if __name__ == "__main__":
     team_names = ["Dragons", "Sharks", "Raptors"] #not limited to three teams
 
     # part2: sort teams by experience and height
-    # (also creates a csv file with sorted teams Team-Roster.csv)
+    # (also creates a csv file with sorted teams team_roster.csv)
     dragons, sharks, raptors = build_teams(player_list, team_names)
 
     # part3: write letters for each team (limited to predefined teams)
